@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Access-Control-Allow-Origin" content="*"/> 
+	<title> API 测试 </title>
+	<script src="jquery-1.8.3.js" type="text/javascript"></script>
+	<script src="json2.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	
+		function getData(){
+	        var url= document.getElementById('msg_url').value;
+	        var successHandle=function (data) {
+	            if (data.success == true) {
+				//   alert(JSON.stringify(data));
+	                document.getElementById('msg_sin').value=JSON.stringify(data);
+	            }
+	            if (data.success == false) {
+	                alert("error");
+	            }
+	        };
+	        var errorHandle=function (data) {
+	            alert('error');
+	            document.getElementById('msg_sin').value=JSON.stringify(data);
+			//  alert(JSON.stringify(data));
+	        };
+	
+		//   sendPostAjax(url,successHandle,errorHandle);
+	        ajaxrequest(url,"get",true,createxml(),c,document);
+		}
+	
+	
+	    function postData(){
+	        var url= document.getElementById('msg_url1').value;
+		//  document.getElementById('msg_url').value=url;
+	        var successHandle=function (data) {
+		 // alert('ok');
+	            if (data.success == true) {
+				// alert(JSON.stringify(data));
+	                document.getElementById('msg_sin').value=JSON.stringify(data);
+	            }
+	            if (data.success == false) {
+	                alert("error");
+	            }
+	        };
+	        var errorHandle=function (data) {
+	            alert('error');
+	            document.getElementById('msg_sin').value=JSON.stringify(data);
+			 // alert(JSON.stringify(data));
+	        };
+	
+		//  sendPostAjax(url,successHandle,errorHandle);
+	        ajaxrequest(url,"post",true,createxml1(),c,document);
+	    }
+	
+	    function getajaxHttp() {
+	        var xmlHttp;
+	        try {
+	            // Firefox, Opera 8.0+, Safari
+	            xmlHttp = new XMLHttpRequest();
+	        } catch (e) {
+	            // Internet Explorer
+	            try {
+	                xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+	            } catch (e) {
+	                try {
+	                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+	                } catch (e) {
+	                    alert("您的浏览器不支持AJAX！");
+	                    return false;
+	                }
+	            }
+	        }
+	        return xmlHttp;
+	    }
+	
+	    function getCookie(name)
+	    {
+	        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+	        if(arr=document.cookie.match(reg))
+	            return unescape(arr[2]);
+	        else
+	            return null;
+	    }
+	
+	    function ajaxrequest(url,methodtype,con,parameter,functionName,obj){
+	        var xmlhttp=getajaxHttp();
+	        xmlhttp.onreadystatechange=function(){
+	            if(xmlhttp.readyState==4){
+	                functionName(xmlhttp,obj);
+	                if(  (xmlhttp.getResponseHeader('x-auth-token')!=null) ){
+	                    document.cookie="JSESSION="+xmlhttp.getResponseHeader('x-auth-token');
+	                }
+	            }
+	        };
+	        xmlhttp.open(methodtype,url,con);
+	        xmlhttp.setRequestHeader('Content-Type','application/json;charset=UTF-8');
+	        if(getCookie('JSESSION') !=''){
+	            xmlhttp.setRequestHeader('x-auth-token',getCookie('JSESSION'));
+	        }
+	        xmlhttp.send(parameter);
+	    }
+	    function createxml1(){
+	        var xml=document.getElementById('msg_body1').value;
+	        return xml;
+	    }
+	    function createxml(){
+	        var xml={
+	//            "username": "123",
+	//            "password": "456"
+	        };
+	        return xml;
+	    }
+	    //function createjson(){
+	    //    var json={id:0,username:"haorooms"};
+	    //    return json;
+	    //}
+	    function c(xmlhttp,obj){
+	        document.getElementById('responseText').value=xmlhttp.responseText;
+	        document.getElementById('responseToken').value=xmlhttp.getResponseHeader('x-auth-token');
+	        //alert("");
+	    }
+	
+	
+	    var getQueryString=function(name) {
+	        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+	        //alert(window.location);
+	        var r = window.location.search.substr(1).match(reg);  //获取url中"?"符后的字符串并正则匹配
+	        var context = "";
+	        if (r != null)
+	            context = r[2];
+	        reg = null;
+	        r = null;
+	        return context == null || context == "" || context == "undefined" ? "" : context;
+	    };
+	
+	    document.cookie="JSESSION="+getQueryString("x-auth-token");
+	
+	</script>
+
+</head>
+<body id="body">
+
+<form id="loginForm">
+
+    <h1 id="usenam">API测试</h1>
+
+    <div id="5">get url：
+        <textarea id="msg_url" style="width:350px;height: 80px"></textarea>
+    </div>
+
+    <div id="password" >
+        <!--<input type="password" placeholder="密码" required="" id="password" />-->
+        <button id="get-btn" onclick="getData()" type="button" style="">Get Request</button>
+    </div>
+
+    <div>post url：
+        <textarea id="msg_url1" style="width:350px;height: 80px"></textarea>
+    </div>
+
+    <div>post body：
+        <textarea id="msg_body1" style="width:350px;height: 80px"></textarea>
+    </div>
+
+    <div>
+        <!--<input type="password" placeholder="密码" required="" id="password" />-->
+        <button id="post-btn" onclick="postData()" type="button" style="">Post Request</button>
+    </div>
+
+    <textarea id="responseText" style="width:350px;height: 80px"></textarea>
+    <textarea id="responseToken" style="width:350px;height: 80px"></textarea>
+		
+</form>
+</body>
+</html>
